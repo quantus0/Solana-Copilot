@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './App.css';
+import { Transaction } from '@solana/web3.js';
 
 const App = () => {
   const [prompt, setPrompt] = useState('');
@@ -8,13 +9,12 @@ const App = () => {
   const [walletAddress, setWalletAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Connect to Phantom wallet
   const connectWallet = async () => {
     try {
       const { solana } = window;
       if (solana?.isPhantom) {
-        const response = await solana.connect();
-        setWalletAddress(response.publicKey.toString());
+        const res = await solana.connect();
+        setWalletAddress(res.publicKey.toString());
       } else {
         alert('Please install Phantom wallet');
       }
@@ -24,20 +24,26 @@ const App = () => {
     }
   };
 
-  // Handle prompt submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!walletAddress) {
       alert('Please connect your wallet');
       return;
     }
+
     setIsLoading(true);
     try {
       const res = await axios.post('http://localhost:3000/api/execute', { prompt, walletAddress });
-      setResponse(res.data.message);
+      const { transaction } = res.data;
+
+      const recovered = new Uint8Array(Buffer.from(transaction, 'base64'));
+      const tx = Transaction.from(recovered);
+
+      const signed = await window.solana.signAndSendTransaction(tx);
+      setResponse(Transaction sent! Signature: ${signed.signature});
     } catch (error) {
-      console.error('Error executing prompt:', error);
-      setResponse('Error: ' + (error.response?.data?.error || 'Unknown error'));
+      console.error('Execution error:', error);
+      setResponse('Error: ' + (error.message || 'Unknown'));
     }
     setIsLoading(false);
   };
@@ -46,7 +52,7 @@ const App = () => {
     <div className="container">
       <h1>Solana Copilot</h1>
       <button onClick={connectWallet} className="wallet-button">
-        {walletAddress ? `Connected: ${walletAddress.slice(0, 6)}...` : 'Connect Phantom Wallet'}
+        {walletAddress ? Connected: ${walletAddress.slice(0, 6)}... : 'Connect Phantom Wallet'}
       </button>
       <form onSubmit={handleSubmit} className="prompt-form">
         <input
