@@ -22,9 +22,9 @@ Solana Copilot is an AI-powered assistant that enables users to interact with So
 - OpenAI API key
 
 ### Installation
-1. Clone the repo:
+Clone the repo:
    ```bash
-   git clone https://github.com/your-username/solana-copilot.git
+   git clone https://github.com/quantus0/solana-copilot.git
    cd solana-copilot
 
 
