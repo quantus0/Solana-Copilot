@@ -27,8 +27,8 @@ const functions = [
   },
 ];
 
-// Execute Solana transaction (placeholder; assumes Phantom signs)
-async function sendSol(amount, toAddress, walletAddress) {
+// Build and return a transaction to be signed in Phantom
+async function createTransferTransaction(amount, toAddress, walletAddress) {
   try {
     const fromPubkey = new solanaWeb3.PublicKey(walletAddress);
     const toPubkey = new solanaWeb3.PublicKey(toAddress);
@@ -42,12 +42,17 @@ async function sendSol(amount, toAddress, walletAddress) {
       })
     );
 
-    // In a real app, Phantom signs the transaction in the frontend
-    // For demo, assume signing is handled externally
-    const signature = await solanaWeb3.sendAndConfirmTransaction(connection, transaction, []);
-    return `Sent ${amount} SOL to ${toAddress}. Signature: ${signature}`;
+    transaction.recentBlockhash = (await connection.getRecentBlockhash()).blockhash;
+    transaction.feePayer = fromPubkey;
+
+    const serialized = transaction.serialize({
+      requireAllSignatures: false,
+      verifySignatures: false,
+    });
+
+    return serialized.toString('base64');
   } catch (error) {
-    throw new Error(`Failed to send SOL: ${error.message}`);
+    throw new Error(Failed to create transaction: ${error.message});
   }
 }
 
@@ -56,7 +61,6 @@ app.post('/api/execute', async (req, res) => {
   const { prompt, walletAddress } = req.body;
 
   try {
-    // Call GPT-4
     const response = await axios.post(
       'https://api.openai.com/v1/chat/completions',
       {
@@ -67,7 +71,7 @@ app.post('/api/execute', async (req, res) => {
       },
       {
         headers: {
-          Authorization: `Bearer ${OPENAI_API_KEY}`,
+          Authorization: Bearer ${OPENAI_API_KEY},
           'Content-Type': 'application/json',
         },
       }
@@ -82,8 +86,8 @@ app.post('/api/execute', async (req, res) => {
     const params = JSON.parse(args);
 
     if (name === 'sendSol') {
-      const result = await sendSol(params.amount, params.toAddress, walletAddress);
-      res.json({ message: result });
+      const transaction = await createTransferTransaction(params.amount, params.toAddress, walletAddress);
+      res.json({ transaction });
     } else {
       res.status(400).json({ error: 'Unsupported action' });
     }
