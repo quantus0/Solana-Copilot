@@ -21,7 +21,7 @@ Setup Instructions
 
 Clone the Repo:
 bash
-git clone https://github.com/yourusername/solana-copilot.git
+git clone https://github.com/quantus0/solana-copilot.git
 cd solana-copilot
 
 Front-End Setup:
