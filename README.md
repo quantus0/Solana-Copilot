@@ -1,4 +1,4 @@
-Solana Copilot
+# Solana Copilot
 
 "The ChatGPT for your Solana wallet."
 
