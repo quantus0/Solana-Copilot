@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title class="text-4xl font-extrabold text-white mb-3">Solana Copilot</title>
+  <title>Solana Copilot</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-6">
   <div class="container mx-auto p-6 max-w-xl">
-    <h1 class="text-4xl font-extrabold text-white mb-3">Solana Copilot</h1>
+    <h1 class="text-4xl font-extrabold text-white mb-3 text-center">Solana Copilot</h1>
 
     <!-- Wallet Connector -->
-    <div id="wallet-connector" class="bg-gray-800 p-10 rounded-3xl shadow-2xl max-w-lg w-full text-center"
+    <div id="wallet-connector" class="bg-gray-800 p-10 rounded-3xl shadow-2xl max-w-lg w-full text-center mb-6">
       <button id="connect-wallet-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
         Connect Wallet
       </button>
@@ -19,13 +19,14 @@
     </div>
 
     <!-- Create Agent -->
-    <div id="agent-creator" class="bg-gray-800 p-10 rounded-3xl shadow-2xl max-w-lg w-full text-center">
-      <h2 class="text-4xl font-extrabold text-white mb-3">Create Agent</h2>
+    <div id="agent-creator" class="bg-gray-800 p-10 rounded-3xl shadow-2xl max-w-lg w-full text-center mb-6">
+      <h2 class="text-2xl font-extrabold text-white mb-3">Create Agent</h2>
       <input
         id="agent-goal-input"
         type="text"
         placeholder="Agent goal (e.g. Buy NFTs under 2 SOL)"
         class="w-full p-2 border border-gray-300 rounded mb-4"
+        aria-label="Agent Goal"
       />
       <button id="create-agent-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
         Create Agent
@@ -33,16 +34,16 @@
     </div>
 
     <!-- Transaction Simulator -->
-    <div id="tx-simulator" class="bg-gray-800 p-10 rounded-3xl shadow-2xl max-w-lg w-full text-center">
-      <h2 class="text-4xl font-extrabold text-white mb-3">Transaction Simulator</h2>
+    <div id="tx-simulator" class="bg-gray-800 p-10 rounded-3xl shadow-2xl max-w-lg w-full text-center mb-6">
+      <h2 class="text-2xl font-extrabold text-white mb-3">Transaction Simulator</h2>
       <button id="simulate-tx-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
         Simulate Transaction
       </button>
     </div>
 
     <!-- Gas Optimizer -->
-    <div id="gas-optimizer" class="bg-gray-800 p-10 rounded-3xl shadow-2xl max-w-lg w-full text-center">
-      <h2 class="text-4xl font-extrabold text-white mb-3">Gas Optimizer</h2>
+    <div id="gas-optimizer" class="bg-gray-800 p-10 rounded-3xl shadow-2xl max-w-lg w-full text-center mb-6">
+      <h2 class="text-2xl font-extrabold text-white mb-3">Gas Optimizer</h2>
       <button id="optimize-gas-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
         Optimize Gas
       </button>
@@ -50,10 +51,10 @@
 
     <!-- Analytics -->
     <div id="analytics" class="bg-gray-800 p-10 rounded-3xl shadow-2xl max-w-lg w-full text-center">
-      <h2 class="text-4xl font-extrabold text-white mb-3">Analytics</h2>
-          <p class="text-gray-400 mb-6 max-w-md mx-auto">Agents Created: <span id="agents-created-count">0</span></p>
-          <p class="text-gray-400 mb-6 max-w-md mx-auto">Total Transactions: <span id="total-tx-count">0</span></p>
-          <p class="text-gray-400 mb-6 max-w-md mx-auto">Gas Saved: <span id="gas-saved">0.00 SOL</span></p>
+      <h2 class="text-2xl font-extrabold text-white mb-3">Analytics</h2>
+      <p class="text-gray-400 mb-2">Agents Created: <span id="agents-created-count">0</span></p>
+      <p class="text-gray-400 mb-2">Total Transactions: <span id="total-tx-count">0</span></p>
+      <p class="text-gray-400 mb-2">Gas Saved: <span id="gas-saved">0.0000 SOL</span></p>
     </div>
   </div>
 
@@ -122,14 +123,19 @@
     // Simulate Transaction
     simulateTxBtn.addEventListener('click', () => {
       alert('Transaction simulated:\nGas estimate: 0.001 SOL\nDetails: Simulated token transfer');
+
+      const currentCount = parseInt(totalTxCount.textContent);
+      totalTxCount.textContent = currentCount + 1;
     });
 
     // Optimize Gas
     optimizeGasBtn.addEventListener('click', () => {
       alert('Gas optimization:\nOriginal: 0.002 SOL\nOptimized: 0.0015 SOL');
-    });
 
-    // You can extend this with more dynamic analytics or agent listing later
+      const savedAmount = 0.0005;
+      const currentSaved = parseFloat(gasSavedEl.textContent);
+      gasSavedEl.textContent = (currentSaved + savedAmount).toFixed(4);
+    });
   </script>
 </body>
 </html>
