@@ -1,171 +1,135 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Solana Copilot</title>
-  <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.development.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 font-sans min-h-screen">
-  <div id="root" class="container mx-auto p-6"></div>
+  <div class="container mx-auto p-6 max-w-xl">
+    <h1 class="text-3xl font-extrabold text-center mb-10">Solana Copilot</h1>
 
-  <script type="text/babel">
-    const { useState } = React;
+    <!-- Wallet Connector -->
+    <div id="wallet-connector" class="mb-6 p-4 bg-white rounded shadow">
+      <button id="connect-wallet-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+        Connect Wallet
+      </button>
+      <p id="wallet-address" class="mt-2 text-green-600 font-semibold hidden"></p>
+    </div>
 
-    // Wallet connect
-    function WalletConnector({ setWallet }) {
-      const [address, setAddress] = useState(null);
+    <!-- Create Agent -->
+    <div id="agent-creator" class="p-4 bg-white rounded shadow mb-6">
+      <h2 class="text-xl font-bold mb-3">Create Agent</h2>
+      <input
+        id="agent-goal-input"
+        type="text"
+        placeholder="Agent goal (e.g. Buy NFTs under 2 SOL)"
+        class="w-full p-2 border border-gray-300 rounded mb-4"
+      />
+      <button id="create-agent-btn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+        Create Agent
+      </button>
+    </div>
 
-      const connectWallet = async () => {
-        if (window.solana) {
-          try {
-            const { publicKey } = await window.solana.connect();
-            setAddress(publicKey.toString());
-            setWallet(publicKey.toString());
-          } catch (e) {
-            alert("Wallet connection failed");
-          }
-        } else {
-          alert("Please install a Solana wallet (Phantom recommended)");
+    <!-- Transaction Simulator -->
+    <div id="tx-simulator" class="p-4 bg-white rounded shadow mb-6">
+      <h2 class="text-xl font-bold mb-3">Transaction Simulator</h2>
+      <button id="simulate-tx-btn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">
+        Simulate Transaction
+      </button>
+    </div>
+
+    <!-- Gas Optimizer -->
+    <div id="gas-optimizer" class="p-4 bg-white rounded shadow mb-6">
+      <h2 class="text-xl font-bold mb-3">Gas Optimizer</h2>
+      <button id="optimize-gas-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded">
+        Optimize Gas
+      </button>
+    </div>
+
+    <!-- Analytics -->
+    <div id="analytics" class="p-4 bg-white rounded shadow">
+      <h2 class="text-xl font-bold mb-3">Analytics</h2>
+      <p>Agents Created: <span id="agents-created-count">0</span></p>
+      <p>Total Transactions: <span id="total-tx-count">20</span></p>
+      <p>Gas Saved: <span id="gas-saved">0.05 SOL</span></p>
+    </div>
+  </div>
+
+  <script>
+    // State
+    let walletAddress = null;
+    let agents = [];
+
+    // Elements
+    const connectWalletBtn = document.getElementById('connect-wallet-btn');
+    const walletAddressEl = document.getElementById('wallet-address');
+    const createAgentBtn = document.getElementById('create-agent-btn');
+    const agentGoalInput = document.getElementById('agent-goal-input');
+    const agentsCreatedCount = document.getElementById('agents-created-count');
+    const totalTxCount = document.getElementById('total-tx-count');
+    const gasSavedEl = document.getElementById('gas-saved');
+    const simulateTxBtn = document.getElementById('simulate-tx-btn');
+    const optimizeGasBtn = document.getElementById('optimize-gas-btn');
+
+    // Connect Wallet
+    connectWalletBtn.addEventListener('click', async () => {
+      if (window.solana && window.solana.isPhantom) {
+        try {
+          const resp = await window.solana.connect();
+          walletAddress = resp.publicKey.toString();
+          walletAddressEl.textContent = `Connected: ${walletAddress.slice(0, 8)}...`;
+          walletAddressEl.classList.remove('hidden');
+          connectWalletBtn.style.display = 'none';
+          alert("Wallet connected!");
+        } catch (err) {
+          alert('Wallet connection failed or was rejected.');
         }
-      };
-
-      return (
-        <div className="mb-6 p-4 bg-white rounded shadow">
-          {address ? (
-            <p className="text-green-600 font-semibold">Connected: {address.slice(0, 8)}...</p>
-          ) : (
-            <button
-              onClick={connectWallet}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-            >
-              Connect Wallet
-            </button>
-          )}
-        </div>
-      );
-    }
+      } else {
+        alert('Please install Phantom wallet to connect.');
+      }
+    });
 
     // Create Agent
-    function AgentCreator({ wallet, addAgent }) {
-      const [goal, setGoal] = useState("");
+    createAgentBtn.addEventListener('click', () => {
+      const goal = agentGoalInput.value.trim();
+      if (!walletAddress) {
+        alert('Please connect your wallet first.');
+        return;
+      }
+      if (!goal) {
+        alert('Please enter an agent goal.');
+        return;
+      }
 
-      const createAgent = () => {
-        if (!wallet) {
-          alert("Connect wallet first");
-          return;
-        }
-        if (!goal.trim()) {
-          alert("Enter an agent goal");
-          return;
-        }
-        const newAgent = {
-          id: Date.now(),
-          goal,
-          status: "Active",
-          txCount: 0,
-          gasSaved: 0,
-        };
-        addAgent(newAgent);
-        setGoal("");
-        alert("Agent created!");
+      const newAgent = {
+        id: Date.now(),
+        goal: goal,
+        status: 'Active',
+        txCount: 0,
+        gasSaved: 0,
       };
+      agents.push(newAgent);
 
-      return (
-        <div className="p-4 bg-white rounded shadow mb-6">
-          <h2 className="text-xl font-bold mb-3">Create Agent</h2>
-          <input
-            type="text"
-            placeholder="Agent goal (e.g. Buy NFTs under 2 SOL)"
-            value={goal}
-            onChange={(e) => setGoal(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded mb-4"
-          />
-          <button
-            onClick={createAgent}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
-          >
-            Create Agent
-          </button>
-        </div>
-      );
-    }
+      agentGoalInput.value = '';
+      alert('Agent created!');
 
-    // Transaction Simulator
-    function TxSimulator() {
-      const simulateTx = () => {
-        alert("Transaction simulated:\nGas estimate: 0.001 SOL\nDetails: Simulated token transfer");
-      };
-      return (
-        <div className="p-4 bg-white rounded shadow mb-6">
-          <h2 className="text-xl font-bold mb-3">Transaction Simulator</h2>
-          <button
-            onClick={simulateTx}
-            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded"
-          >
-            Simulate Transaction
-          </button>
-        </div>
-      );
-    }
+      // Update analytics
+      agentsCreatedCount.textContent = agents.length;
+    });
 
-    // Gas Optimizer
-    function GasOptimizer() {
-      const optimizeGas = () => {
-        alert("Gas optimization:\nOriginal: 0.002 SOL\nOptimized: 0.0015 SOL");
-      };
-      return (
-        <div className="p-4 bg-white rounded shadow mb-6">
-          <h2 className="text-xl font-bold mb-3">Gas Optimizer</h2>
-          <button
-            onClick={optimizeGas}
-            className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
-          >
-            Optimize Gas
-          </button>
-        </div>
-      );
-    }
+    // Simulate Transaction
+    simulateTxBtn.addEventListener('click', () => {
+      alert('Transaction simulated:\nGas estimate: 0.001 SOL\nDetails: Simulated token transfer');
+    });
 
-    // Analytics
-    function Analytics() {
-      const data = {
-        agentsCreated: 5,
-        totalTx: 20,
-        gasSaved: "0.05 SOL",
-      };
-      return (
-        <div className="p-4 bg-white rounded shadow">
-          <h2 className="text-xl font-bold mb-3">Analytics</h2>
-          <p>Agents Created: {data.agentsCreated}</p>
-          <p>Total Transactions: {data.totalTx}</p>
-          <p>Gas Saved: {data.gasSaved}</p>
-        </div>
-      );
-    }
+    // Optimize Gas
+    optimizeGasBtn.addEventListener('click', () => {
+      alert('Gas optimization:\nOriginal: 0.002 SOL\nOptimized: 0.0015 SOL');
+    });
 
-    // Main app
-    function App() {
-      const [wallet, setWallet] = useState(null);
-      const [agents, setAgents] = useState([]);
-
-      const addAgent = (agent) => setAgents([...agents, agent]);
-
-      return (
-        <div>
-          <h1 className="text-3xl font-extrabold text-center mb-10">Solana Copilot</h1>
-          <WalletConnector setWallet={setWallet} />
-          <AgentCreator wallet={wallet} addAgent={addAgent} />
-          <TxSimulator />
-          <GasOptimizer />
-          <Analytics />
-        </div>
-      );
-    }
-
-    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+    // You can extend this with more dynamic analytics or agent listing later
   </script>
 </body>
 </html>
