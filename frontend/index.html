@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Solana Copilot</title>
+  <title class="text-4xl font-extrabold text-white mb-3">Solana Copilot</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-6">
   <div class="container mx-auto p-6 max-w-xl">
-    <h1 class="text-3xl font-extrabold text-center mb-10">Solana Copilot</h1>
+    <h1 class="text-4xl font-extrabold text-white mb-3">Solana Copilot</h1>
 
     <!-- Wallet Connector -->
-    <div id="wallet-connector" class="mb-6 p-4 bg-white rounded shadow">
+    <div id="wallet-connector" class="bg-gray-800 p-10 rounded-3xl shadow-2xl max-w-lg w-full text-center"
       <button id="connect-wallet-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
         Connect Wallet
       </button>
@@ -19,41 +19,41 @@
     </div>
 
     <!-- Create Agent -->
-    <div id="agent-creator" class="p-4 bg-white rounded shadow mb-6">
-      <h2 class="text-xl font-bold mb-3">Create Agent</h2>
+    <div id="agent-creator" class="bg-gray-800 p-10 rounded-3xl shadow-2xl max-w-lg w-full text-center">
+      <h2 class="text-4xl font-extrabold text-white mb-3">Create Agent</h2>
       <input
         id="agent-goal-input"
         type="text"
         placeholder="Agent goal (e.g. Buy NFTs under 2 SOL)"
         class="w-full p-2 border border-gray-300 rounded mb-4"
       />
-      <button id="create-agent-btn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+      <button id="create-agent-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
         Create Agent
       </button>
     </div>
 
     <!-- Transaction Simulator -->
-    <div id="tx-simulator" class="p-4 bg-white rounded shadow mb-6">
-      <h2 class="text-xl font-bold mb-3">Transaction Simulator</h2>
-      <button id="simulate-tx-btn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">
+    <div id="tx-simulator" class="bg-gray-800 p-10 rounded-3xl shadow-2xl max-w-lg w-full text-center">
+      <h2 class="text-4xl font-extrabold text-white mb-3">Transaction Simulator</h2>
+      <button id="simulate-tx-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
         Simulate Transaction
       </button>
     </div>
 
     <!-- Gas Optimizer -->
-    <div id="gas-optimizer" class="p-4 bg-white rounded shadow mb-6">
-      <h2 class="text-xl font-bold mb-3">Gas Optimizer</h2>
-      <button id="optimize-gas-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded">
+    <div id="gas-optimizer" class="bg-gray-800 p-10 rounded-3xl shadow-2xl max-w-lg w-full text-center">
+      <h2 class="text-4xl font-extrabold text-white mb-3">Gas Optimizer</h2>
+      <button id="optimize-gas-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
         Optimize Gas
       </button>
     </div>
 
     <!-- Analytics -->
-    <div id="analytics" class="p-4 bg-white rounded shadow">
-      <h2 class="text-xl font-bold mb-3">Analytics</h2>
-      <p>Agents Created: <span id="agents-created-count">0</span></p>
-      <p>Total Transactions: <span id="total-tx-count">20</span></p>
-      <p>Gas Saved: <span id="gas-saved">0.05 SOL</span></p>
+    <div id="analytics" class="bg-gray-800 p-10 rounded-3xl shadow-2xl max-w-lg w-full text-center">
+      <h2 class="text-4xl font-extrabold text-white mb-3">Analytics</h2>
+          <p class="text-gray-400 mb-6 max-w-md mx-auto">Agents Created: <span id="agents-created-count">0</span></p>
+          <p class="text-gray-400 mb-6 max-w-md mx-auto">Total Transactions: <span id="total-tx-count">0</span></p>
+          <p class="text-gray-400 mb-6 max-w-md mx-auto">Gas Saved: <span id="gas-saved">0.00 SOL</span></p>
     </div>
   </div>
 
